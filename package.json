@@ -1,5 +1,6 @@
 {
   "name": "realtime-weather-app",
+  "homepage": "https://bob910078.github.io/demoTest",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
