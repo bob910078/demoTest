@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState } from "react";
+import MyModal from "./MyModal";
+import HistoryTable from "./HistoryTable";
+import OrderEditor from "./OrderEditor";
 
-function App() {
+const App = () => {
+  const [data, setData] = useState([
+    ["name1", "city1", "some other info"],
+    ["name2", "city2", "more info"],
+  ]);
+
+  const handleFileChange = (e) => {
+    let reader = new FileReader();
+    reader.readAsText(e.target.files[0]);
+    reader.onload = () => {
+      setData(
+        reader.result.split("\r\n").map((row) =>
+          row.split(",").reduce((acc, cell) => {
+            acc.push(cell);
+            return acc;
+          }, [])
+        )
+      );
+    };
+  };
+
+  let csvContent = data.map((e) => e.join(",")).join("\n");
+  let file = new File([csvContent], "filename.csv", { type: "text/csv" });
+  let exportUrl = URL.createObjectURL(file);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <MyModal
+          title="Order History"
+          child={
+            <>
+              <input type="file" onChange={handleFileChange} />
+              <div style={{ height: "2rem" }}></div>
+              <a href={encodeURI(exportUrl)} download="my_data.csv">
+                Export CSV File
+              </a>
+              <div style={{ height: "2rem" }}></div>
+              <HistoryTable data={data} />
+            </>
+          }
+        />
+        <div style={{ height: "2rem" }}></div>
+        <OrderEditor />
       </header>
     </div>
   );
-}
+};
 
 export default App;
